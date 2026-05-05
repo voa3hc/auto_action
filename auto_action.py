@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 import threading
 import time
 import tkinter as tk
@@ -10,11 +12,27 @@ try:
     pyautogui.FAILSAFE = True  # Move mouse to top-left to abort automation
 except Exception:
     pyautogui = None
+
+if pyautogui is None:
+    try:
+        subprocess.run([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'], check=True)
+        import pyautogui
+        pyautogui.FAILSAFE = True
+    except Exception as e:
+        print(f"Failed to install dependencies: {e}")
+
 # Global hotkey support (ESC to stop even when app not focused)
 try:
     from pynput import keyboard as pynput_keyboard
 except Exception:
     pynput_keyboard = None
+
+if pynput_keyboard is None:
+    try:
+        subprocess.run([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'], check=True)
+        from pynput import keyboard as pynput_keyboard
+    except Exception as e:
+        print(f"Failed to install dependencies: {e}")
 
 
 def parse_xy(text: str):
@@ -270,9 +288,9 @@ class ActionApp(tk.Tk):
         tipFrame = tk.Frame(self)
         tipFrame.pack(fill="x", padx=10, pady=(8, 0))
         tip_msg = (
-            "Tips:"
-            "    ESC to stop run, Ctrl to update (X,Y) parameter"
-            "    Send Key format: 1|enter|hotkey:ctrl+v|hotkey:alt+tab|type:VIN123456789"
+            "Tips:\n"
+            "    ESC to stop run, Ctrl to update (X,Y) parameter\n"
+            "    Send Key format: 1|enter|hotkey:ctrl+v|hotkey:alt+tab|type:VIN123456789\n"
         )
         tk.Label(tipFrame, text=tip_msg, anchor="w", justify="left").pack(fill="x")
 
@@ -653,14 +671,14 @@ class ActionApp(tk.Tk):
     def about(self):
         """Show the About dialog describing the Action Editor."""
         msg = (
-            "Action Editor"
-            "Features:"
-            "- Live mouse position"
-            "- Save/Load JSON"
-            "- Execute Click/Mouse Move via pyautogui"
-            "- Drag & drop reorder"
-            "- Delay/Repeat/Loop"
-            "Safety:"
+            "Action Editor\n"
+            "Features:\n"
+            "- Live mouse position\n"
+            "- Save/Load JSON\n"
+            "- Execute Click/Mouse Move via pyautogui\n"
+            "- Drag & drop reorder\n"
+            "- Delay/Repeat/Loop\n"
+            "Safety:\n"
             "- pyautogui FAILSAFE enabled (move mouse to top-left)."
         )
         messagebox.showinfo("About", msg)
